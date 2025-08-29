@@ -215,7 +215,7 @@ namespace internal {
 #if __TBB_TASK_PRIORITY
         //! Pointer to the next offloaded lower priority task.
         /** Used to maintain a list of offloaded tasks inside the scheduler. **/
-        task* next_offloaded;
+        tbb::task* next_offloaded;
         };
 #endif /* __TBB_TASK_PRIORITY */
 
@@ -960,3 +960,4 @@ inline void operator delete( void* task, const tbb::internal::allocate_additiona
 }
 
 #endif /* __TBB_task_H */
+
