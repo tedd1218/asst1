@@ -113,13 +113,30 @@ namespace RasterRenderer
 
         inline int TestQuadFragment(__m128i x, __m128i y)
         {
-
-            // TODO: 
-            // Implement triangle-quad-fragment coverage testing here.
-            // Return an integer encoding the coverage testing results.
-
-            return 0;
-
+            __m128i w[3] = {
+                _mm_add_epi32(_mm_mullo_epi32(a0, _mm_sub_epi32(x, x0)), _mm_mullo_epi32(b0, _mm_sub_epi32(y, y0))),
+                _mm_add_epi32(_mm_mullo_epi32(a1, _mm_sub_epi32(x, x1)), _mm_mullo_epi32(b1, _mm_sub_epi32(y, y1))),
+                _mm_add_epi32(_mm_mullo_epi32(a2, _mm_sub_epi32(x, x2)), _mm_mullo_epi32(b2, _mm_sub_epi32(y, y2)))
+            };
+            
+            __m128i covered = _mm_set1_epi32(-1);
+            for (int i = 0; i < 3; i++) {
+                covered = _mm_and_si128(covered, _mm_or_si128(
+                    _mm_cmpgt_epi32(w[i], _mm_setzero_si128()),
+                    _mm_and_si128(_mm_cmpeq_epi32(w[i], _mm_setzero_si128()), 
+                    _mm_set1_epi32(isOwnerEdge[i]))
+                ));
+            }
+            
+            CORE_LIB_ALIGN_16(int result[4]);
+            _mm_store_ps((float*)result, _mm_castsi128_ps(covered));
+            
+            int bitmask = 0;
+            if (result[0]) bitmask |= 0x8;
+            if (result[1]) bitmask |= 0x80;
+            if (result[2]) bitmask |= 0x800;
+            if (result[3]) bitmask |= 0x8000;
+            return bitmask;
         }
     };
 
@@ -156,10 +173,41 @@ namespace RasterRenderer
     template<typename ProcessPixelFunc>
     inline void RasterizeTriangle(int regionX0, int regionY0, int regionW, int regionH, const ProjectedTriangle &tri, TriangleSIMD& triSIMD, ProcessPixelFunc processQuadFragmentFunc)
     {
-        
-        // TODO: 
-        // Implement triangle rasterization here.
-        
+        int minX = std::min(std::min(tri.X0, tri.X1), tri.X2) >> 4;
+        int maxX = std::max(std::max(tri.X0, tri.X1), tri.X2) >> 4;
+        int minY = std::min(std::min(tri.Y0, tri.Y1), tri.Y2) >> 4;
+        int maxY = std::max(std::max(tri.Y0, tri.Y1), tri.Y2) >> 4;
+
+        int px0 = std::max(minX, regionX0);
+        int py0 = std::max(minY, regionY0);
+        int px1 = std::min(maxX, regionX0 + regionW - 1);
+        int py1 = std::min(maxY, regionY0 + regionH - 1);
+
+        px0 &= ~1;
+        py0 &= ~1;
+        px1 &= ~1;
+        py1 &= ~1;
+    
+        for (int qy = py0; qy <= py1; qy += 2) {
+            for (int qx = px0; qx <= px1; qx += 2) {
+                __m128i x_samp = _mm_setr_epi32(
+                    (qx << 4) + 8,
+                    (qx << 4) + 24,
+                    (qx << 4) + 8,
+                    (qx << 4) + 24
+                );
+                __m128i y_samp = _mm_setr_epi32(
+                    (qy << 4) + 8,
+                    (qy << 4) + 8,
+                    (qy << 4) + 24,
+                    (qy << 4) + 24
+                );
+                int mask = triSIMD.TestQuadFragment(x_samp, y_samp);
+                if (mask == 0) continue;
+                bool trivial_accept = (mask == 0x8888);
+                processQuadFragmentFunc(qx, qy, false);
+            }
+        }
     }
 }
 
