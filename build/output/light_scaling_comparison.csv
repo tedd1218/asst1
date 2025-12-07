@@ -1,0 +1,8 @@
+LightCount,ForwardFPS,ForwardTimeMs,DeferredFPS,DeferredTimeMs,Winner,Speedup
+1,8.72,114.65,7.10,140.77,Forward,0.81
+5,7.36,135.91,7.14,139.97,Forward,0.97
+10,6.16,162.43,7.16,139.71,Deferred,1.16
+25,4.12,242.83,7.08,141.15,Deferred,1.72
+50,2.62,381.98,7.12,140.37,Deferred,2.72
+75,1.92,519.54,7.19,139.13,Deferred,3.73
+100,1.51,660.85,7.20,138.97,Deferred,4.76

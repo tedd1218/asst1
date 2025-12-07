@@ -19,9 +19,6 @@ namespace RasterRenderer
     // interpret this as max number of worker threads
     static const int Cores = 12;
 
-    // sets up the triangle based on three post-projection clip space coordinates.
-    // it computes the edges equation and performs back-face culling.
-
     // parameters:
     //    [out] tri: returns the computed edge equations
     //     [in] constId: offset to constant buffer
@@ -549,9 +546,13 @@ namespace RasterRenderer
 
         virtual void Draw(RenderState & state, VertexBufferRef * vertBuffer, IndexBufferRef * indexBuffer, int * constantIndex)
         {
+            if (!state.Shader || !vertBuffer || !indexBuffer)
+                return;
+            
             IndexBufferRef & index = *indexBuffer;
             int i = 0;
             int vertexOutputSize = state.Shader->GetTessellatedVertexOutputSize();
+            
             while (i < indexBuffer->Count())
             {
                 i = triangleInput.Input<false>(state, vertBuffer, indexBuffer, constantIndex, i);

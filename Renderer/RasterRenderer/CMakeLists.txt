@@ -15,6 +15,10 @@ add_library(RasterRendererLib
    targetver.h
    Tracing.h
    VertexBuffer.h
+   ForwardLightingShader.h
+   GBuffer.h
+   GeometryPassShader.h
+   LightingPassShader.h
    FrameBuffer.cpp
    IRasterRenderer.cpp
    ModelResource.cpp
@@ -22,6 +26,7 @@ add_library(RasterRendererLib
    Shader.cpp
    Statistics.cpp
    TiledRenderer.cpp
+   DeferredTiledRenderer.cpp
 )
 
 target_link_libraries(RasterRendererLib CoreLib_Basic CoreLib_Imaging CoreLib_Graphics debug ${TBB_DEBUG} optimized ${TBB_RELEASE})

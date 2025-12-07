@@ -42,12 +42,13 @@ namespace RasterRenderer
         //RefPtr<IndexBuffer> indexBuffer;
         List<RefPtr<RenderBatch>> batches;
         List<ModelMaterial> materials;
-        RefPtr<Shader> shader;
+        Shader* shader;
         List<int> constBuffer;
         int Count;
     public:
         float Radius;
         ModelResource()
+            : shader(nullptr)
         {}
         static ModelResource FromObjModel(String fileName);
         static ModelResource FromObjModel(String basePath, CoreLib::Graphics::ObjModel & model);
@@ -61,10 +62,22 @@ namespace RasterRenderer
         }
         inline void Draw(RenderState & state, IRasterRenderer * renderer)
         {
+            if (!renderer || !vertexBuffer.Ptr())
+                return;
+            
             state.ConstantBuffer = constBuffer.Buffer();
-            state.Shader = this->shader.Ptr();
+            // Use model's shader if set, otherwise use state's shader
+            if (this->shader)
+                state.Shader = this->shader;
+            
+            if (!state.Shader)
+                return;
+            
             for (int i = 0; i<batches.Count(); i++)
             {
+                if (!batches[i].Ptr())
+                    continue;
+                
                 state.AlphaBlend = batches[i]->AlphaBlend;
                 renderer->Draw(state, vertexBuffer.Ptr(), &batches[i]->IndexBuffer, batches[i]->ConstantIndex.Buffer());
             }

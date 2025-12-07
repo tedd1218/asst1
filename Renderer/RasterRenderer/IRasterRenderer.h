@@ -24,6 +24,9 @@ namespace RasterRenderer
     };
     IRasterRenderer * CreateForwardNonTiledRenderer();
     IRasterRenderer * CreateTiledRenderer();
+    IRasterRenderer * CreateDeferredTiledRenderer();
+    IRasterRenderer * CreateGPUTiledRenderer();
+    IRasterRenderer * CreateGPUDeferredTiledRenderer();
     void DestroyRenderer(IRasterRenderer * renderer);
 }
 

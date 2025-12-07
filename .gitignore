@@ -1,0 +1,13 @@
+# Large data files
+train_player_tracking.csv
+us_bank_stadium.glb
+*.glb
+
+# Build artifacts
+build/
+
+# Output files
+output/
+*.mp4
+*.bmp
+
