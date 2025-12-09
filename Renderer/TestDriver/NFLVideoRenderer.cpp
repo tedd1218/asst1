@@ -15,9 +15,6 @@
 #include <vector>
 #include <cmath>
 
-// NFL_VIDEO_RENDERER_MAIN is defined via CMake for nfl_video_renderer executable
-// When undefined (for compare_nfl_renderers), main() is excluded
-
 using namespace CoreLib::Basic;
 using namespace CoreLib::Diagnostics;
 using namespace CoreLib::Graphics;
@@ -32,8 +29,6 @@ using namespace NFL;
 SimplePlayerModel::SimplePlayerModel(const Vec3& color)
 {
         // Create a simple box model for players
-        // In a real implementation, you'd load a player model
-        // For now, we'll create a simple procedural model
         ObjModel obj;
         
         // Create a simple box for a player
@@ -610,9 +605,6 @@ int main(int argc, char* argv[])
     printf("Actually created %d frame files\n", fileCount);
     fflush(stdout);
     printf("To create video: ffmpeg -r 10 -i %s/frame_%%05d.bmp -c:v libx264 -pix_fmt yuv420p output.mp4\n", 
-           outputDir.ToMultiByteString());
-    fflush(stdout);
-    printf("To create video, run: ffmpeg -r 10 -i %s/frame_%%d.bmp -c:v libx264 -pix_fmt yuv420p output.mp4\n", 
            outputDir.ToMultiByteString());
     
     DestroyRenderer(renderer);

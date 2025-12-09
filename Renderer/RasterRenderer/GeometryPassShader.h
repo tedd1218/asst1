@@ -52,7 +52,6 @@ namespace RasterRenderer
             _mm_store_ps(normZ, normalZ);
             
             // Extract depth (from clip space position w component)
-            // For now, use z from input[9] as depth approximation
             CORE_LIB_ALIGN_16(float depth[4]);
             _mm_store_ps(depth, input[9]);
             
@@ -63,7 +62,6 @@ namespace RasterRenderer
             _mm_store_ps(v, input[11]);
             
             // Store data in output buffer for later G-Buffer write
-            // Layout: [posX0, posY0, posZ0, posX1, ...] [normX0, ...] [albedo0, ...] [depth0, ...]
             int offset = 0;
             for (int i = 0; i < 4; i++)
             {
